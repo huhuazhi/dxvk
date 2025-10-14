@@ -1,6 +1,7 @@
 #include "dxvk_device.h"
 #include "dxvk_graphics.h"
 #include "dxvk_pipecompiler.h"
+#include "dxvk_renderpass.h"
 
 namespace dxvk {
 

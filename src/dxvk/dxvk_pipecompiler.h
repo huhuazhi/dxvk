@@ -13,6 +13,7 @@ namespace dxvk {
   class DxvkDevice;
   class DxvkGraphicsPipeline;
   class DxvkGraphicsPipelineStateInfo;
+  class DxvkRenderPass;
 
   /**
    * \brief Pipeline compiler

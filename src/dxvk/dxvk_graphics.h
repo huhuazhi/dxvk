@@ -18,6 +18,7 @@ namespace dxvk {
   
   class DxvkDevice;
   class DxvkPipelineManager;
+  class DxvkPipelineCompiler;
 
   /**
    * \brief Flags that describe pipeline properties
@@ -144,6 +145,7 @@ namespace dxvk {
    * pipeline state vector.
    */
   class DxvkGraphicsPipeline {
+    friend class DxvkPipelineCompiler;
     
   public:
     
