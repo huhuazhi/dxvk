@@ -4147,8 +4147,9 @@ namespace dxvk {
       : DxvkContextFlag::GpDirtyStencilRef);
     
     // Retrieve and bind actual Vulkan pipeline handle
+    bool asyncCompile = m_device->config().enableAsync && checkAsyncCompilationCompat();
     m_gpActivePipeline = m_state.gp.pipeline->getPipelineHandle(
-      m_state.gp.state, m_state.om.framebufferInfo.renderPass());
+      m_state.gp.state, m_state.om.framebufferInfo.renderPass(), asyncCompile);
 
     if (unlikely(!m_gpActivePipeline))
       return false;
@@ -4159,6 +4160,17 @@ namespace dxvk {
 
     m_flags.clr(DxvkContextFlag::GpDirtyPipelineState);
     return true;
+  }
+
+
+  bool DxvkContext::checkAsyncCompilationCompat() {
+    bool fbCompat = true;
+    for (uint32_t i = 0; i < MaxNumRenderTargets && fbCompat; i++) {
+      const DxvkAttachment& attachment = m_state.om.framebufferInfo.getColorTarget(i);
+      if (attachment.view != nullptr)
+        fbCompat &= attachment.view->image()->rtIndex <= 1;
+    }
+    return fbCompat;
   }
   
   

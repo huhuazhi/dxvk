@@ -18,6 +18,7 @@ namespace dxvk {
   
   class DxvkDevice;
   class DxvkPipelineManager;
+  class DxvkPipelineCompiler;
 
   /**
    * \brief Flags that describe pipeline properties
@@ -144,6 +145,7 @@ namespace dxvk {
    * pipeline state vector.
    */
   class DxvkGraphicsPipeline {
+    friend class DxvkPipelineCompiler;
     
   public:
     
@@ -199,11 +201,13 @@ namespace dxvk {
      * state. If necessary, a new pipeline will be created.
      * \param [in] state Pipeline state vector
      * \param [in] renderPass The render pass
+     * \param [in] async Compile asynchronously
      * \returns Pipeline handle
      */
     VkPipeline getPipelineHandle(
       const DxvkGraphicsPipelineStateInfo&    state,
-      const DxvkRenderPass*                   renderPass);
+      const DxvkRenderPass*                   renderPass,
+      bool                                    async);
     
     /**
      * \brief Compiles a pipeline
@@ -212,8 +216,9 @@ namespace dxvk {
      * and stores the result for future use.
      * \param [in] state Pipeline state vector
      * \param [in] renderPass The render pass
+     * \returns true if the pipeline was successfully compiled
      */
-    void compilePipeline(
+    bool compilePipeline(
       const DxvkGraphicsPipelineStateInfo&    state,
       const DxvkRenderPass*                   renderPass);
     
@@ -236,6 +241,7 @@ namespace dxvk {
     // List of pipeline instances, shared between threads
     alignas(CACHE_LINE_SIZE)
     dxvk::mutex                               m_mutex;
+    dxvk::mutex                               m_mutex2;
     sync::List<DxvkGraphicsPipelineInstance>  m_pipelines;
     
     DxvkGraphicsPipelineInstance* createInstance(

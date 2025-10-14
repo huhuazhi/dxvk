@@ -10,6 +10,7 @@
 namespace dxvk {
 
   class DxvkStateCache;
+  class DxvkPipelineCompiler;
 
   /**
    * \brief Pipeline count
@@ -100,6 +101,7 @@ namespace dxvk {
     DxvkDevice*               m_device;
     Rc<DxvkPipelineCache>     m_cache;
     Rc<DxvkStateCache>        m_stateCache;
+    Rc<DxvkPipelineCompiler>  m_compiler;
 
     std::atomic<uint32_t>     m_numComputePipelines  = { 0 };
     std::atomic<uint32_t>     m_numGraphicsPipelines = { 0 };

@@ -62,13 +62,27 @@ namespace dxvk {
 
   VkPipeline DxvkGraphicsPipeline::getPipelineHandle(
     const DxvkGraphicsPipelineStateInfo& state,
-    const DxvkRenderPass*                renderPass) {
+    const DxvkRenderPass*                renderPass,
+    bool                                 async) {
     DxvkGraphicsPipelineInstance* instance = this->findInstance(state, renderPass);
 
     if (unlikely(!instance)) {
       // Exit early if the state vector is invalid
       if (!this->validatePipelineState(state, true))
         return VK_NULL_HANDLE;
+
+      // If the pipeline is being compiled asynchronously, return null handle
+      // and queue the compilation.
+      if (async) {
+        std::lock_guard<dxvk::mutex> lock(m_mutex2);
+        instance = this->findInstance(state, renderPass);
+
+        if (!instance) {
+          if (m_pipeMgr->m_compiler != nullptr)
+            m_pipeMgr->m_compiler->queueCompilation(this, state, renderPass);
+          return VK_NULL_HANDLE;
+        }
+      }
 
       // Prevent other threads from adding new instances and check again
       std::lock_guard<dxvk::mutex> lock(m_mutex);
@@ -86,19 +100,23 @@ namespace dxvk {
   }
 
 
-  void DxvkGraphicsPipeline::compilePipeline(
+  bool DxvkGraphicsPipeline::compilePipeline(
     const DxvkGraphicsPipelineStateInfo& state,
     const DxvkRenderPass*                renderPass) {
     // Exit early if the state vector is invalid
     if (!this->validatePipelineState(state, false))
-      return;
+      return false;
 
     // Keep the object locked while compiling a pipeline since compiling
     // similar pipelines concurrently is fragile on some drivers
     std::lock_guard<dxvk::mutex> lock(m_mutex);
 
-    if (!this->findInstance(state, renderPass))
+    if (!this->findInstance(state, renderPass)) {
       this->createInstance(state, renderPass);
+      return true;
+    }
+
+    return false;
   }
 
 
