@@ -1,4 +1,5 @@
 #include "dxvk_device.h"
+#include "dxvk_pipecompiler.h"
 #include "dxvk_pipemanager.h"
 #include "dxvk_state_cache.h"
 
@@ -13,6 +14,9 @@ namespace dxvk {
     
     if (useStateCache != "0" && device->config().enableStateCache)
       m_stateCache = new DxvkStateCache(device, this, passManager);
+    
+    if (device->config().enableAsync)
+      m_compiler = new DxvkPipelineCompiler(device);
   }
   
   

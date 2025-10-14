@@ -26,6 +26,12 @@ namespace dxvk {
 
     /// HUD elements
     std::string hud;
+
+    /// Enable async pipeline compilation
+    bool enableAsync;
+
+    /// Number of async compiler threads
+    int32_t numAsyncThreads;
   };
 
 }

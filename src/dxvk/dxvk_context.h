@@ -1232,6 +1232,8 @@ namespace dxvk {
     bool updateGraphicsPipeline();
     bool updateGraphicsPipelineState();
     
+    bool checkAsyncCompilationCompat();
+    
     void updateComputeShaderResources();
     void updateGraphicsShaderResources();
 

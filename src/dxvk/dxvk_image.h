@@ -333,6 +333,9 @@ namespace dxvk {
     bool m_shared = false;
 
     small_vector<VkFormat, 4> m_viewFormats;
+
+  public:
+    uint64_t rtIndex = 0;
     
     bool canShareImage(const VkImageCreateInfo&  createInfo, const DxvkSharedHandleInfo& sharingInfo) const;
 
